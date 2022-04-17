@@ -1,5 +1,15 @@
 from abc import ABC, abstractmethod
 
+data = {
+    "spell":{
+        "fireball" : 15,
+        "lightning shard" : 20,
+        "earthkick" : 15,
+        "aboba kick" : 50,
+        "gigaDrill" : 30 
+    }
+}
+
 class Rcreator(ABC):
     def create_room(self):
         pass
@@ -38,6 +48,11 @@ class Strangeroom(Room):
 class Ecreator(ABC):
     def create_enemy(self):
         pass
+
+    def operation(self):
+        product = self.create_enemy(self)
+        result = f"Creator: The same creator's code has just worked with {product}"
+        return result
 
 class ZombieEnemyCreator(Ecreator):
     def create_enemy(self):

@@ -37,7 +37,8 @@ class Room(ABC):
 
 class Saveroom(Room):
     def option(self):
-        return "SaveRoom"
+        saveroom = "aboba"
+        return saveroom
 class Attackroom(Room):
     def option(self):
         return "AttackRoom"
@@ -56,13 +57,13 @@ class Ecreator(ABC):
 
 class ZombieEnemyCreator(Ecreator):
     def create_enemy(self):
-        return
+        return Zombie()
 class SkeletonEnemyCreator(Ecreator):
     def create_enemy(self):
-        return
+        return Skeleton()
 class GoblinEnemyCreator(Ecreator):
     def create_enemy(self):
-        return
+        return Goblin()
 
 class Enemy(ABC):
     def option(self):
@@ -70,10 +71,13 @@ class Enemy(ABC):
 
 class Zombie(Enemy):
     def option(self):
-        return "zombie"
+        zombie = [100,10]
+        return zombie
 class Skeleton(Enemy):
     def option(self):
-        return "skeleton"
+        skeleton = [80, 20]
+        return skeleton
 class Goblin(Enemy):
     def option(self):
-        return "goblin"
+        goblin = [50,50]
+        return goblin

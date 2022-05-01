@@ -23,10 +23,14 @@ class GAME:
 
         self.game_level = "normal"
         self.hp = 100
-        self.turns_count = 10
+        self.turns_count = 5
         self.foe_hp = 10
         self.spellvar = tk.IntVar()
         self.spell_list = []
+        self.zombie = server.ZombieEnemyCreator().create_enemy().option()
+        self.skeleton = server.SkeletonEnemyCreator().create_enemy().option()
+        self.goblin = server.GoblinEnemyCreator().create_enemy().option()
+        self.attack = ""
 
     def close(self, event):
         return self.root.destroy()
@@ -47,7 +51,7 @@ class GAME:
         self.r3.pack()
         self.btac.pack()
 
-        self.btac.bind("<button-1>", self.change)
+        self.btac.bind("<Button-1>", self.change)
 
     def change(self):
         if self.var.get() == 0:
@@ -127,7 +131,7 @@ class GAME:
         
         self.bt_menu.bind("<Button-1>", self.second_menu)
         self.bt_turnend.bind("<Button-1>", self.end_turn)
-    #lb = Tk.Label(fr, text = game.SaveRoomsCreator().create_room().option())
+        
 
     def find_enemy(self):
         pass
@@ -140,17 +144,76 @@ class GAME:
         return self.right_spell
 
     def end_turn(self, event):
+        self.turns_count -= 1
         if self.spellvar.get() == 0:
-            self.foe_hp -= server.data["spell"][self.spell_list.pop(0)]
-            
+            damage = server.data["spell"][self.spell_list.pop(0)]
+            self.foe_hp -= damage
         elif self.spellvar.get() == 1:
             self.foe_hp -= server.data["spell"][self.spell_list.pop(1)]
         elif self.spellvar.get() == 2:
-            self.foe_hp -= server.data["spell"][self.spell_list.pop(2)]
+            damage = server.data["spell"][self.spell_list.pop(2)]
+            self.foe_hp -= damage
+
+        if self.foe_hp <= 0:
+            self.zombie = server.ZombieEnemyCreator().create_enemy().option()
+            self.skeleton = server.SkeletonEnemyCreator().create_enemy().option()
+            self.goblin = server.GoblinEnemyCreator().create_enemy().option()
+            enemy_choise = random.randint(0,2)
+            if enemy_choise == 0:
+                self.attack = "zombie"
+                self.foe_hp = self.zombie.pop(0)
+                self.lb_foe.config(text = "Zombie")
+            elif enemy_choise == 1:
+                self.attack = "skeleton"
+                self.foe_hp = self.skeleton.pop(0)
+                self.lb_foe.config(text = "Skeleton")
+            else:
+                self.attack = "goblin"
+                self.foe_hp = self.goblin.pop(0)
+                self.lb_foe.config(text = "Goblin")
+
+        
         self.lb_foe_hp.config(text = self.foe_hp)
+        self.spell_list.clear()
         self.rb1.config(text = self.new_spell())
         self.rb2.config(text = self.new_spell())
         self.rb3.config(text = self.new_spell())
+        if self.turns_count == 0:
+            if self.attack == "zombie":
+                self.hp -= self.zombie.pop(0)
+                if self.hp <= 0:
+                    self.gameover = tk.Toplevel()
+                    self.lb_gameover = tk.Label(self.gameover, text = "Вы проиграли(")
+                    self.CLOSE = tk.Button(self.gameover, text = "Закрыть игру", width = 25)
+                    self.CLOSE.pack()
+                    self.CLOSE.bind("<Button-1>", self.close)
+                else:
+                    self.turns_count = 5
+                    self.lb_hp.config(text=self.hp)
+            elif self.attack == "skeleton":
+                self.hp -= self.skeleton.pop(0)
+                if self.hp <= 0:
+                    self.gameover = tk.Toplevel()
+                    self.lb_gameover = tk.Label(self.gameover, text = "Вы проиграли(")
+                    self.CLOSE = tk.Button(self.gameover, text = "Закрыть игру", width = 25)
+                    self.CLOSE.pack()
+                    self.CLOSE.bind("<Button-1>", self.close)
+                else:
+                    self.turns_count = 5
+                    self.lb_hp.config(text=self.hp)
+            elif self.attack == "goblin":
+                self.hp -= self.goblin.pop(0)
+                if self.hp <= 0:
+                    self.gameover = tk.Toplevel()
+                    self.lb_gameover = tk.Label(self.gameover, text = "Вы проиграли(")
+                    self.CLOSE = tk.Button(self.gameover, text = "Закрыть игру", width = 25)
+                    self.CLOSE.pack()
+                    self.CLOSE.bind("<Button-1>", self.close)
+                else:
+                    self.lb_hp.config(text=self.hp)
+                    self.turns_count = 5
+        self.lb_turncount.config(text = self.turns_count)
+
 
 if __name__ == "__main__":
     game = GAME()

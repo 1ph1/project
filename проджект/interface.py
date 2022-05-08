@@ -1,22 +1,31 @@
 import server
 import tkinter as tk
 import random
+import sqlite3
+
+connection = sqlite3.connect('data.db')
+cursor = connection.cursor()
+
+
 class GAME:
 
     def __init__(self):
         self.root = tk.Tk()
         self.root.resizable(False, False)
         self.main = tk.Frame(self.root, width = 25)
-        self.NG = tk.Button(text = "Новая игра", width = 25)
+        self.CNT = tk.Button(text = "Загрузить сохранение", width = 25)
+        self.NG = tk.Button(text = "Играть", width = 25)
         self.OPTIONS = tk.Button(text = "Настройки", width = 25)
         self.CLOSE = tk.Button(text = "Выход", width = 25)
 
 
         self.main.pack(fill="both",expand=True)
+        self.CNT.pack()
         self.NG.pack()
         self.OPTIONS.pack()
         self.CLOSE.pack()
 
+        self.CNT.bind("<Button-1>", self.continue_play)
         self.NG.bind("<Button-1>", self.new_game)
         self.OPTIONS.bind("<Button-1>", self.option)
         self.CLOSE.bind("<Button-1>", self.close)
@@ -64,8 +73,11 @@ class GAME:
     def second_menu(self, event):
         self.menu = tk.Toplevel()
         self.CLOSE = tk.Button(self.menu, text = "Выход", width = 25)
+        self.SAVE = tk.Button(self.menu, text = "Сохранить", width = 25)
         self.CLOSE.pack()
+        self.SAVE.pack()
         self.CLOSE.bind("<Button-1>", self.close)
+        self.SAVE.bind("<Button-1>", self.save_progress)
 
     def new_game(self, event):
         self.Game = tk.Toplevel()
@@ -214,6 +226,22 @@ class GAME:
                     self.turns_count = 5
         self.lb_turncount.config(text = self.turns_count)
 
+    def save_progress(self, event):
+        enemy = self.attack
+        fhp = self.foe_hp
+        shp = self.hp
+        print(str(enemy))
+        # cursor.execute('''CREATE TABLE IF NOT EXISTS Save
+        #     (Title TEXT, foe TEXT, foe_hp INT, hp INT)''')
+        cursor.execute(f"INSERT INTO Save(title, foe, foe_hp, hp) VALUES ('SAVE' , '{enemy}' , {fhp} , {shp} )")
+        connection.commit()
+
+    def continue_play(self, event):
+        cursor.execute("SELECT foe FROM Save")
+        saves = cursor.fetchall()
+        print(saves[0][0])
+        self.foe = saves[0][0]
+        self.lb_foe.config(text = self.foe)
 
 if __name__ == "__main__":
     game = GAME()

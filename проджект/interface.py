@@ -6,7 +6,6 @@ import sqlite3
 connection = sqlite3.connect('data.db')
 cursor = connection.cursor()
 
-
 class GAME:
 
     def __init__(self):
@@ -40,6 +39,7 @@ class GAME:
         self.skeleton = server.SkeletonEnemyCreator().create_enemy().option()
         self.goblin = server.GoblinEnemyCreator().create_enemy().option()
         self.attack = ""
+        self.save = 0
 
     def close(self, event):
         return self.root.destroy()
@@ -102,7 +102,8 @@ class GAME:
         self.rb2 = tk.Radiobutton(self.fr3, bg = "#e0e094", fg = "black", variable = self.spellvar, value = 1, text = self.new_spell())
         self.rb3 = tk.Radiobutton(self.fr3, bg = "#e0e094", fg = "black", variable = self.spellvar, value = 2, text = self.new_spell())
         #-----------------
-
+        self.img = tk.PhotoImage(file='zombie.png')
+        self.lb_img = tk.Label(self.fr2, image=self.img)
         #------пустышки      
         self.f1 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
         self.f2 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
@@ -122,6 +123,7 @@ class GAME:
         self.bt_menu.pack(side = "right")
         self.lb_hp.pack(side = "left")
 
+        self.lb_img.pack(side="bottom")
         self.lb_foe_hp.pack(side = "bottom")
         self.lb_foe.pack(side="bottom")
 
@@ -141,8 +143,13 @@ class GAME:
         self.rb2.grid(row=1,column=6)
         self.rb3.grid(row=2,column=6)
         
+        
         self.bt_menu.bind("<Button-1>", self.second_menu)
         self.bt_turnend.bind("<Button-1>", self.end_turn)
+        if self.save == 1:
+            self.lb_foe.config(text = self.foe)
+            self.lb_foe_hp.config(text = self.foe_hp)
+            self.lb_hp.config(text = self.hp)
         
 
     def find_enemy(self):
@@ -230,18 +237,20 @@ class GAME:
         enemy = self.attack
         fhp = self.foe_hp
         shp = self.hp
-        print(str(enemy))
-        # cursor.execute('''CREATE TABLE IF NOT EXISTS Save
-        #     (Title TEXT, foe TEXT, foe_hp INT, hp INT)''')
+        print(enemy,fhp,shp)
+        #cursor.execute('''CREATE TABLE IF NOT EXISTS Save
+        #    (Title TEXT, foe TEXT, foe_hp INT, hp INT)''')
         cursor.execute(f"INSERT INTO Save(title, foe, foe_hp, hp) VALUES ('SAVE' , '{enemy}' , {fhp} , {shp} )")
         connection.commit()
 
     def continue_play(self, event):
         cursor.execute("SELECT foe FROM Save")
         saves = cursor.fetchall()
-        print(saves[0][0])
+        print(saves)
         self.foe = saves[0][0]
-        self.lb_foe.config(text = self.foe)
+        self.foe_hp = saves[0][0]
+        self.hp = saves[0][0]
+        self.save += 1
 
 if __name__ == "__main__":
     game = GAME()

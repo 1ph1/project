@@ -1,4 +1,3 @@
-from ctypes.wintypes import HPALETTE
 import server
 import tkinter as tk
 import random

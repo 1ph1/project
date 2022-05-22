@@ -1,10 +1,8 @@
+from ctypes.wintypes import HPALETTE
 import server
 import tkinter as tk
 import random
-import sqlite3
-
-connection = sqlite3.connect('data.db')
-cursor = connection.cursor()
+from PIL import Image, ImageTk
 
 class GAME:
 
@@ -16,7 +14,6 @@ class GAME:
         self.NG = tk.Button(text = "Играть", width = 25)
         self.OPTIONS = tk.Button(text = "Настройки", width = 25)
         self.CLOSE = tk.Button(text = "Выход", width = 25)
-
 
         self.main.pack(fill="both",expand=True)
         self.CNT.pack()
@@ -40,6 +37,7 @@ class GAME:
         self.goblin = server.GoblinEnemyCreator().create_enemy().option()
         self.attack = ""
         self.save = 0
+        self.e_count = 0
 
     def close(self, event):
         return self.root.destroy()
@@ -62,7 +60,7 @@ class GAME:
 
         self.btac.bind("<Button-1>", self.change)
 
-    def change(self):
+    def change(self, event):
         if self.var.get() == 0:
             self.game_level = "easy"
         elif self.var.get() == 1:
@@ -72,8 +70,10 @@ class GAME:
 
     def second_menu(self, event):
         self.menu = tk.Toplevel()
+        self.lb_diff = tk.Label(self.menu, text = f"Сложность: {self.game_level}")
         self.CLOSE = tk.Button(self.menu, text = "Выход", width = 25)
         self.SAVE = tk.Button(self.menu, text = "Сохранить", width = 25)
+        self.lb_diff.pack()
         self.CLOSE.pack()
         self.SAVE.pack()
         self.CLOSE.bind("<Button-1>", self.close)
@@ -89,6 +89,7 @@ class GAME:
 
         self.bt_menu = tk.Button(self.fr1, text = "меню")
         self.lb_hp = tk.Label(self.fr1, text = f"{self.hp}/100")
+        self.lb_e_count = tk.Label(self.fr1, text = self.e_count)
 
         self.lb_pl = tk.Label(self.fr2, text = "Игрок", fg = "blue")
         self.lb_foe = tk.Label(self.fr2, fg = "black", text = "враг")
@@ -102,8 +103,11 @@ class GAME:
         self.rb2 = tk.Radiobutton(self.fr3, bg = "#e0e094", fg = "black", variable = self.spellvar, value = 1, text = self.new_spell())
         self.rb3 = tk.Radiobutton(self.fr3, bg = "#e0e094", fg = "black", variable = self.spellvar, value = 2, text = self.new_spell())
         #-----------------
-        self.img = tk.PhotoImage(file='zombie.png')
+        self.img = tk.PhotoImage(file='skelet.png')
         self.lb_img = tk.Label(self.fr2, image=self.img)
+
+        self.img_scroll = tk.PhotoImage(file='skrol.png')
+        self.lb_img_scroll = tk.Label(self.fr2, image=self.img_scroll, width = 100, height = 15)
         #------пустышки      
         self.f1 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
         self.f2 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
@@ -122,6 +126,7 @@ class GAME:
         self.fr3.pack(side = "bottom", fill = tk.X)
         self.bt_menu.pack(side = "right")
         self.lb_hp.pack(side = "left")
+        self.lb_e_count.pack(side = "left")
 
         self.lb_img.pack(side="bottom")
         self.lb_foe_hp.pack(side = "bottom")
@@ -134,6 +139,7 @@ class GAME:
         self.f3.grid(row=0,column=4)
         self.f4.grid(row=0,column=5)
         self.lb_book1.grid(row=0,column=6,rowspan=3,columnspan=5)
+        self.lb_img_scroll.grid(row=0,colum=6,rowspan=3,columnspan=5)
         self.f6.grid(row=0,column=12)
         self.f7.grid(row=0,column=13)
         self.f8.grid(row=0,column=14)
@@ -150,10 +156,6 @@ class GAME:
             self.lb_foe.config(text = self.foe)
             self.lb_foe_hp.config(text = self.foe_hp)
             self.lb_hp.config(text = self.hp)
-        
-
-    def find_enemy(self):
-        pass
 
     def new_spell(self):
         self.spells = list(server.data["spell"].keys())
@@ -174,20 +176,25 @@ class GAME:
             self.foe_hp -= damage
 
         if self.foe_hp <= 0:
+            self.e_count += 1
+            self.lb_e_count.config(text = self.e_count)
             self.zombie = server.ZombieEnemyCreator().create_enemy().option()
             self.skeleton = server.SkeletonEnemyCreator().create_enemy().option()
             self.goblin = server.GoblinEnemyCreator().create_enemy().option()
             enemy_choise = random.randint(0,2)
             if enemy_choise == 0:
                 self.attack = "zombie"
+                self.img.config(file = "zombie.png")
                 self.foe_hp = self.zombie.pop(0)
                 self.lb_foe.config(text = "Zombie")
             elif enemy_choise == 1:
                 self.attack = "skeleton"
+                self.img.config(file = "skelet.png")
                 self.foe_hp = self.skeleton.pop(0)
                 self.lb_foe.config(text = "Skeleton")
             else:
                 self.attack = "goblin"
+                self.img.config(file = "goblin.png")
                 self.foe_hp = self.goblin.pop(0)
                 self.lb_foe.config(text = "Goblin")
 
@@ -199,7 +206,14 @@ class GAME:
         self.rb3.config(text = self.new_spell())
         if self.turns_count == 0:
             if self.attack == "zombie":
-                self.hp -= self.zombie.pop(0)
+                if self.game_level == "easy":
+                    self.hp -= self.zombie.pop(0)
+                elif self.game_level == "normal":
+                    damage = self.zombie.pop(0)
+                    self.hp -= (damage * 2)
+                else:
+                    damage = self.zombie.pop(0)
+                    self.hp -= (damage * 3)
                 if self.hp <= 0:
                     self.gameover = tk.Toplevel()
                     self.lb_gameover = tk.Label(self.gameover, text = "Вы проиграли(")
@@ -208,9 +222,16 @@ class GAME:
                     self.CLOSE.bind("<Button-1>", self.close)
                 else:
                     self.turns_count = 5
-                    self.lb_hp.config(text=self.hp)
+                    self.lb_hp.config(text= f"{self.hp}/100")
             elif self.attack == "skeleton":
-                self.hp -= self.skeleton.pop(0)
+                if self.game_level == "easy":
+                    self.hp -= self.skeleton.pop(0)
+                elif self.game_level == "normal":
+                    damage = self.skeleton.pop(0)
+                    self.hp -= (damage * 2)
+                else:
+                    damage = self.skeleton.pop(0)
+                    self.hp -= (damage * 3)
                 if self.hp <= 0:
                     self.gameover = tk.Toplevel()
                     self.lb_gameover = tk.Label(self.gameover, text = "Вы проиграли(")
@@ -219,9 +240,16 @@ class GAME:
                     self.CLOSE.bind("<Button-1>", self.close)
                 else:
                     self.turns_count = 5
-                    self.lb_hp.config(text=self.hp)
+                    self.lb_hp.config(text=f"{self.hp}/100")
             elif self.attack == "goblin":
-                self.hp -= self.goblin.pop(0)
+                if self.game_level == "easy":
+                    self.hp -= self.skeleton.pop(0)
+                elif self.game_level == "normal":
+                    damage = self.skeleton.pop(0)
+                    self.hp -= (damage * 2)
+                else:
+                    damage = self.skeleton.pop(0)
+                    self.hp -= (damage * 3)
                 if self.hp <= 0:
                     self.gameover = tk.Toplevel()
                     self.lb_gameover = tk.Label(self.gameover, text = "Вы проиграли(")
@@ -229,27 +257,29 @@ class GAME:
                     self.CLOSE.pack()
                     self.CLOSE.bind("<Button-1>", self.close)
                 else:
-                    self.lb_hp.config(text=self.hp)
+                    self.lb_hp.config(text=f"{self.hp}/100")
                     self.turns_count = 5
         self.lb_turncount.config(text = self.turns_count)
 
     def save_progress(self, event):
+        opensave = open('saves.txt', 'w')
         enemy = self.attack
         fhp = self.foe_hp
         shp = self.hp
-        print(enemy,fhp,shp)
-        #cursor.execute('''CREATE TABLE IF NOT EXISTS Save
-        #    (Title TEXT, foe TEXT, foe_hp INT, hp INT)''')
-        cursor.execute(f"INSERT INTO Save(title, foe, foe_hp, hp) VALUES ('SAVE' , '{enemy}' , {fhp} , {shp} )")
-        connection.commit()
+        diffcult = self.game_level
+        opensave.write(f"{enemy}\n")
+        opensave.write(f"{str(fhp)}\n")
+        opensave.write(f"{str(shp)}\n")
+        opensave.write(f"{diffcult}\n")
+        opensave.close()
 
     def continue_play(self, event):
-        cursor.execute("SELECT foe FROM Save")
-        saves = cursor.fetchall()
-        print(saves)
-        self.foe = saves[0][0]
-        self.foe_hp = saves[0][0]
-        self.hp = saves[0][0]
+        opensave = open('saves.txt')
+        savesp = []
+        for line in opensave:
+            cur_save = line.replace("\n", "")
+            savesp.append(cur_save)
+        print(savesp)
         self.save += 1
 
 if __name__ == "__main__":

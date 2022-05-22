@@ -105,8 +105,8 @@ class GAME:
         self.img = tk.PhotoImage(file='skelet.png')
         self.lb_img = tk.Label(self.fr2, image=self.img)
 
-        self.img_scroll = tk.PhotoImage(file='skrol.png')
-        self.lb_img_scroll = tk.Label(self.fr2, image=self.img_scroll, width = 100, height = 15)
+        #self.img_scroll = tk.PhotoImage(file='skrol.png')
+        #self.lb_img_scroll = tk.Label(self.fr2, image=self.img_scroll, width = 100, height = 15)
         #------пустышки      
         self.f1 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
         self.f2 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
@@ -138,7 +138,7 @@ class GAME:
         self.f3.grid(row=0,column=4)
         self.f4.grid(row=0,column=5)
         self.lb_book1.grid(row=0,column=6,rowspan=3,columnspan=5)
-        self.lb_img_scroll.grid(row=0,colum=6,rowspan=3,columnspan=5)
+        #self.lb_img_scroll.grid(row=0,colum=6,rowspan=3,columnspan=5)
         self.f6.grid(row=0,column=12)
         self.f7.grid(row=0,column=13)
         self.f8.grid(row=0,column=14)
@@ -152,9 +152,9 @@ class GAME:
         self.bt_menu.bind("<Button-1>", self.second_menu)
         self.bt_turnend.bind("<Button-1>", self.end_turn)
         if self.save == 1:
-            self.lb_foe.config(text = self.foe)
+            self.lb_foe.config(text = self.attack)
             self.lb_foe_hp.config(text = self.foe_hp)
-            self.lb_hp.config(text = self.hp)
+            self.lb_hp.config(text = f"{self.hp}/100")
 
     def new_spell(self):
         self.spells = list(server.data["spell"].keys())
@@ -278,7 +278,11 @@ class GAME:
         for line in opensave:
             cur_save = line.replace("\n", "")
             savesp.append(cur_save)
-        print(savesp)
+
+        self.attack = savesp.pop(0)
+        self.foe_hp = savesp.pop(0)
+        self.hp = savesp.pop(0)
+        self.game_level = savesp.pop(0)
         self.save += 1
 
 if __name__ == "__main__":

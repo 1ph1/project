@@ -82,7 +82,7 @@ class GAME:
         self.Game = tk.Toplevel()
         self.Game.attributes('-fullscreen', True)
 
-        self.fr1 = tk.Frame(self.Game, height = 400)
+        self.fr1 = tk.Frame(self.Game, height = 400, bg = "#d8d8d8")
         self.fr2 = tk.Frame(self.Game)
         self.fr3 = tk.Frame(self.Game, height = 300, bg = "#d8d8d8")
 

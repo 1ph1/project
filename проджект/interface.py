@@ -84,40 +84,41 @@ class GAME:
 
         self.fr1 = tk.Frame(self.Game, height = 400)
         self.fr2 = tk.Frame(self.Game)
-        self.fr3 = tk.Frame(self.Game, height = 300)
+        self.fr3 = tk.Frame(self.Game, height = 300, bg = "#d8d8d8")
 
         self.bt_menu = tk.Button(self.fr1, text = "меню")
         self.lb_hp = tk.Label(self.fr1, text = f"{self.hp}/100")
-        self.lb_e_count = tk.Label(self.fr1, text = self.e_count)
+        self.lb_e_count = tk.Label(self.fr1, text = f"Количество убитых врагов: {self.e_count}")
 
         self.lb_pl = tk.Label(self.fr2, text = "Игрок", fg = "blue")
-        self.lb_foe = tk.Label(self.fr2, fg = "black", text = "враг")
+        self.lb_foe = tk.Label(self.fr2, fg = "black", text = "враг", bg = "#d8d8d8")
         self.lb_foe_hp = tk.Label(self.fr2, fg = "black", text = self.foe_hp)
 
+        self.img_bt_end = tk.PhotoImage(file='end_turn_bt.png')
+
         self.lb_book1 = tk.Label(self.fr3, bg = "#e0e094", fg = "white", width = 100, height = 15)
-        self.lb_turncount = tk.Label(self.fr3, bg = "brown", fg = "black", text = self.turns_count) 
-        self.bt_turnend = tk.Button(self.fr3, bg = "brown", fg = "black", text = "Завершить ход") 
-        #------Радиобатоны
+        self.lb_turncount = tk.Label(self.fr3, bg = "green", fg = "black", text = self.turns_count) 
+        self.bt_turnend = tk.Button(self.fr3, image = self.img_bt_end) 
+
+        #self.lb_grandline = tk.Label(self.fr2, bg="#7A7666", width = 15)
+        #------Радио батоны
         self.rb1 = tk.Radiobutton(self.fr3, bg = "#e0e094", fg = "black", variable = self.spellvar, value = 0, text = self.new_spell())
         self.rb2 = tk.Radiobutton(self.fr3, bg = "#e0e094", fg = "black", variable = self.spellvar, value = 1, text = self.new_spell())
         self.rb3 = tk.Radiobutton(self.fr3, bg = "#e0e094", fg = "black", variable = self.spellvar, value = 2, text = self.new_spell())
         #-----------------
         self.img = tk.PhotoImage(file='skelet.png')
         self.lb_img = tk.Label(self.fr2, image=self.img)
-
-        #self.img_scroll = tk.PhotoImage(file='skrol.png')
-        #self.lb_img_scroll = tk.Label(self.fr2, image=self.img_scroll, width = 100, height = 15)
         #------пустышки      
-        self.f1 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
-        self.f2 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
-        self.f3 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
-        self.f4 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
-        self.f5 = tk.Label(self.fr3, text = "Пуст", fg = "#E6E6E6")
-        self.f6 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
-        self.f7 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
-        self.f8 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
-        self.f9 = tk.Label(self.fr3, text = "Пустышка", fg = "#E6E6E6")
-        self.f10 = tk.Label(self.fr3, text = "Пуст", fg = "#E6E6E6")
+        self.f1 = tk.Label(self.fr3, text = "Пустышка", fg = "#d8d8d8", bg = "#d8d8d8")
+        self.f2 = tk.Label(self.fr3, text = "Пустышка", fg = "#d8d8d8", bg = "#d8d8d8")
+        self.f3 = tk.Label(self.fr3, text = "Пустышка", fg = "#d8d8d8", bg = "#d8d8d8")
+        self.f4 = tk.Label(self.fr3, text = "Пустышка", fg = "#d8d8d8", bg = "#d8d8d8")
+        self.f5 = tk.Label(self.fr3, text = "Пуст", fg = "#d8d8d8", bg = "#d8d8d8")
+        self.f6 = tk.Label(self.fr3, text = "Пустышка", fg = "#d8d8d8", bg = "#d8d8d8")
+        self.f7 = tk.Label(self.fr3, text = "Пустышка", fg = "#d8d8d8", bg = "#d8d8d8")
+        self.f8 = tk.Label(self.fr3, text = "Пустышка", fg = "#d8d8d8", bg = "#d8d8d8")
+        self.f9 = tk.Label(self.fr3, text = "Пустышка", fg = "#d8d8d8", bg = "#d8d8d8")
+        self.f10 = tk.Label(self.fr3, text = "Пуст", fg = "#d8d8d8", bg = "#d8d8d8")
         #--------------
 
         self.fr1.pack(fill = tk.X)
@@ -127,23 +128,23 @@ class GAME:
         self.lb_hp.pack(side = "left")
         self.lb_e_count.pack(side = "left")
 
+        #self.lb_grandline.pack(side="bottom", fill= tk.X)
         self.lb_img.pack(side="bottom")
         self.lb_foe_hp.pack(side = "bottom")
         self.lb_foe.pack(side="bottom")
 
         self.f5.grid(row=0,column=0)
-        self.lb_turncount.grid(row = 0, column=1)
+        self.lb_turncount.grid(row = 0, column=1, rowspan = 4, columnspan=3)
         self.f1.grid(row=0,column=2)
         self.f2.grid(row=0,column=3)
         self.f3.grid(row=0,column=4)
         self.f4.grid(row=0,column=5)
         self.lb_book1.grid(row=0,column=6,rowspan=3,columnspan=5)
-        #self.lb_img_scroll.grid(row=0,colum=6,rowspan=3,columnspan=5)
         self.f6.grid(row=0,column=12)
         self.f7.grid(row=0,column=13)
         self.f8.grid(row=0,column=14)
         self.f10.grid(row=0,column= 15)
-        self.bt_turnend.grid(row=0,column = 16)
+        self.bt_turnend.grid(row=1,column = 16)
         self.rb1.grid(row=0,column=6)
         self.rb2.grid(row=1,column=6)
         self.rb3.grid(row=2,column=6)
@@ -153,8 +154,15 @@ class GAME:
         self.bt_turnend.bind("<Button-1>", self.end_turn)
         if self.save == 1:
             self.lb_foe.config(text = self.attack)
+            if self.attack == "zombie":
+                self.img.config(file = "zombie.png")
+            elif self.attack == "skeleton":
+                self.img.config(file = "skelet.png")
+            else:
+                self.img.config(file = "goblin.png")
             self.lb_foe_hp.config(text = self.foe_hp)
             self.lb_hp.config(text = f"{self.hp}/100")
+            self.lb_e_count.config(text = f"Количество убитых врагов: {self.e_count}")
 
     def new_spell(self):
         self.spells = list(server.data["spell"].keys())
@@ -176,7 +184,7 @@ class GAME:
 
         if self.foe_hp <= 0:
             self.e_count += 1
-            self.lb_e_count.config(text = self.e_count)
+            self.lb_e_count.config(text = f"Количество убитых врагов: {self.e_count}")
             self.zombie = server.ZombieEnemyCreator().create_enemy().option()
             self.skeleton = server.SkeletonEnemyCreator().create_enemy().option()
             self.goblin = server.GoblinEnemyCreator().create_enemy().option()
@@ -266,10 +274,12 @@ class GAME:
         fhp = self.foe_hp
         shp = self.hp
         diffcult = self.game_level
+        e_count = self.e_count
         opensave.write(f"{enemy}\n")
         opensave.write(f"{str(fhp)}\n")
         opensave.write(f"{str(shp)}\n")
         opensave.write(f"{diffcult}\n")
+        opensave.write(f"{e_count}\n")
         opensave.close()
 
     def continue_play(self, event):
@@ -281,8 +291,10 @@ class GAME:
 
         self.attack = savesp.pop(0)
         self.foe_hp = savesp.pop(0)
+        print(self.foe_hp)
         self.hp = savesp.pop(0)
         self.game_level = savesp.pop(0)
+        self.e_count = savesp.pop(0)
         self.save += 1
 
 if __name__ == "__main__":
